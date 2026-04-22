@@ -3,34 +3,39 @@ on:
   push:
     branches: [ main, master ]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
+
+      - name: Install Dependencies
+        run: |
+          # سنستخدم npm لضمان استقرار المسارات في GitHub
+          npm install --legacy-peer-deps
+
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
+
       - name: Build Release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon
-      - name: Upload APK Artifact
+          # تنظيف وبناء التطبيق
+          ./gradlew clean assembleRelease --no-daemon
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: doola-cord-app-release
+          name: Doola-Cord-App
           path: android/app/build/outputs/apk/release/*.apk
-          if-no-files-found: error
