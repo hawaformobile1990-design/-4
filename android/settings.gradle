@@ -1,16 +1,15 @@
 rootProject.name = 'Doola Cord'
 
-// البحث عن إضافات React Native تلقائياً
-def reactNativePath = new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getParentFile()
-includeBuild(new File(reactNativePath, 'gradle-plugin'))
+// تصحيح المسار للوصول إلى gradle-plugin بشكل مباشر ومضمون
+includeBuild(new File(settingsDir, '../node_modules/@react-native/gradle-plugin'))
 
 // إعداد الوحدات النمطية
-apply from: new File(['node', '--print', "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle")
+apply from: new File(settingsDir, '../node_modules/@react-native-community/cli-platform-android/native_modules.gradle')
 applyNativeModulesSettingsGradle(settings)
 
 include ':app'
 include ':expo'
 
 // إعداد وحدات Expo
-apply from: new File(['node', '--print', "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(settingsDir, '../node_modules/expo/scripts/autolinking.gradle')
 useExpoModules()
